@@ -131,7 +131,7 @@ namespace Pratik___Cilgin_Muzisyenler.Controllers
 
         //Eğlence Özelliği özelliğini HttpPatch ile güncelledik
         [HttpPatch("reschedule/{id:int:min(1)}/{newFunProperty}")]
-        public ActionResult RescheduleTour(int id, string newFunProperty)
+        public ActionResult RescheduleFunProperty(int id, string newFunProperty)
         {
             var musician = _musicians.FirstOrDefault(x => x.Id == id);
             if (musician is null)
@@ -144,23 +144,33 @@ namespace Pratik___Cilgin_Muzisyenler.Controllers
 
         //Musician name updated with httpput
         [HttpPut("update/{id:int:min(1)}/{musicianName}")]
-        public IActionResult UpdateTourPlanet(int id, string musicianName)
+        public IActionResult UpdatePutMusician(int id, [FromBody] Musician musicianUpdate)
         {
+
+            if (!ModelState.IsValid || musicianUpdate is null || id != musicianUpdate.Id)
+            {
+                return BadRequest();
+            }
+
+
             var musician = _musicians.FirstOrDefault(x => x.Id == id);
             if (musician is null)
             {
                 return NotFound($"Musician id {id} bulunamadı");
             }
 
-            musician.Name = musicianName;
-            return NoContent();
+
+            musician.Id = musicianUpdate.Id;
+            musician.Name = musicianUpdate.Name;
+            musician.FunProperty = musicianUpdate.FunProperty;
+            return Ok(musician);
         }
 
 
         //We delete both id and name with httpdelete
         [HttpDelete("cancel/{id:int:min(1)}")]
         [HttpDelete("cancel/{musicianName}")]
-        public IActionResult CancelTour(int? id, string? musicianName)
+        public IActionResult RemoveMusician(int? id, string? musicianName)
         {
             Musician musicianToRemove;
 
